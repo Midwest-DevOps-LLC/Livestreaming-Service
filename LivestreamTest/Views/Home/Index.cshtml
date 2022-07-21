@@ -1,0 +1,167 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-fluid px-0" style="padding:0px">
+    @*<div class="row">&nbsp;</div>*@
+    <div class="row" style="margin-left: 0px; margin-right:0px;">
+        <div class="col-sm-12 col-lg-10" style="padding: 0px;">
+            <img class="img-fluid float-right" style="width: 100%" id="screen" />
+            <video id="my-video"
+                   class="video-js vjs-default-skin vjs-big-play-centered"
+                   controls
+                   preload="auto"
+                   width="640"
+                   height="264"
+                   data-setup='{"fluid": true}'>
+                <source src="/Video/GetStream" type='application/x-mpegURL'>
+                <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a
+                    web browser that
+                    <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                </p>
+            </video>
+        </div>
+        <div class="col-lg-2">
+            <div class="row" id="messageColumn" style="overflow:auto">
+                <div class="col-12">
+                    <ul id="messagesList" style="padding:4px;"></ul>
+                </div>
+            </div>
+            <div class="row" id="test">
+                <div class="col-12">
+                    <div class="input-group mb-3" id="inputSendMessage">
+                        @if (ViewBag.UserSession == null)
+                        {
+                            <div><b>To send a message please login</b></div>
+                        }
+                        else
+                        {
+                            <input id="userAuth" type="hidden" value="@ViewBag.UserSession.Token" />
+                            @*<div style="display:block">
+                                <input id="messageInput" type="text" class="form-control" placeholder="Message...">
+                                <div class="input-group-append">
+                                    <button name="sendButton" id="sendButton" class="btn btn-outline-secondary" type="button">Send</button>
+                                </div>
+                            </div>*@
+
+                            <div class="input-group mb-3">
+                                <input id="messageInput"  type="text" class="form-control" placeholder="Message..." >
+                                <div class="input-group-append">
+                                    <button name="sendButton" id="sendButton" class="btn btn-outline-secondary" type="button">Send</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row" style="margin-left: 0px; margin-right:0px;">
+        <div class="col-lg-4" id="recentlyplayed" style="max-height:30vh; overflow:auto"></div>
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col-12" id="currentlyPlaying"></div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-12" id="recentlyplayed">
+                    <div class="row">
+                        <br />
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <select id="drpType" class="custom-select">
+                                    <option value="track" selected>Track</option>
+                                    <option value="artist">Artist</option>
+                                </select>
+                            </div>
+                            <input id="txtSearch" type="text" class="form-control" placeholder="Search...">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" onclick="Search()">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="searchResults">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+
+    <script>
+
+        var isLoggedIn = true;
+
+        setInterval(GetRecentlyPlayed, 20000);
+        setInterval(GetCurrentSong, 20000);
+
+        $(document).ready(function () {
+            if (isLoggedIn) {
+                GetRecentlyPlayed()
+                GetCurrentSong();
+            }
+        });
+
+        function GetRecentlyPlayed() {
+            $.ajax({
+                method: 'GET',
+                url: '/Spotify/RecentlyPlayed',
+                success: function (data) {
+                    $('#recentlyplayed').html(data);
+                }
+            })
+            .done(function (msg) {
+                //alert('Data Saved: ' + msg);
+            });
+        }
+
+        function GetCurrentSong() {
+            $.ajax({
+                method: 'GET',
+                url: '/Spotify/CurrentlyPlaying',
+                success: function (data) {
+                    $('#currentlyPlaying').html(data);
+                }
+            })
+            .done(function (msg) {
+                //alert('Data Saved: ' + msg);
+            });
+        }
+
+        function Search() {
+            if (isLoggedIn) {
+                $.ajax({
+                    method: 'POST',
+                    url: '/Spotify/Search',
+                    data: { q: $('#txtSearch').val(), type: $('#drpType').val() },
+                    success: function (data) {
+                        $('#searchResults').html(data);
+                    }
+                })
+                .done(function (msg) {
+                    //alert('Data Saved: ' + msg);
+                });
+            }
+        }
+
+        function AddToQueue(uri) {
+            $.ajax({
+                method: 'POST',
+                url: '/Spotify/AddItemToQueue',
+                data: { uri: uri },
+                success: function (data) {
+                    ShowGreenStatus('Added to Queue');
+                }
+            })
+            .done(function (msg) {
+                //alert('Data Saved: ' + msg);
+            });
+        }
+    </script>
+}

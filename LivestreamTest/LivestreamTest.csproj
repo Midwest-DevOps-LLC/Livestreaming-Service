@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>ea42a21c-3877-4dd8-99df-31348bc56c8c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MDO.RESTDataEntities.Standard" Version="1.0.25" />
+    <PackageReference Include="MDO.RESTServiceRequestor.Standard" Version="1.0.25" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+  </ItemGroup>
+
+</Project>

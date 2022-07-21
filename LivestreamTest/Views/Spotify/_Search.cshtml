@@ -1,0 +1,54 @@
+﻿@model LivestreamTest.Models.SpotifySearchModel
+
+@if (Model.tracks.items.Any())
+{    
+    <div class="row">
+        <div class="col-12">
+            Search Results (@Model.tracks.items.Count)
+        </div>
+    </div>
+
+    <table class="table table-sm table-hover table-striped">
+
+    @foreach (var song in Model.tracks.items)
+    {
+        <tr>
+            <td>
+                <img src="@song.album.images.LastOrDefault().url" class="img-fluid .d-sm-none .d-md-block hideOnSmall" />
+                <img src="@song.album.images.FirstOrDefault().url" class="img-fluid .d-none .d-sm-block .d-md-none showOnSmall" />
+            </td>
+            <td>
+                @song.name
+            </td>
+            <td>
+                @song.album.name
+            </td>
+            <td>
+                <button class="btn btn-outline-success" type="button" onclick="AddToQueue('@(song.uri)')"><i style="color:#28a745" class="fas fa-plus"></i> Add to Queue</button>
+            </td>
+
+            @*<div class="row">
+                <div class="col-2">
+                    <img src="@song.album.images.FirstOrDefault().url" class="img-fluid" />
+                </div>
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-12">
+                            @song.name
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            @song.album.name
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-outline-success" type="button" onclick="AddToQueue('@(song.uri)')"><i style="color:#28a745" class="fas fa-plus"></i> Add to Queue</button>
+                </div>
+            </div>*@
+        </tr>
+    }
+
+    </table>
+}

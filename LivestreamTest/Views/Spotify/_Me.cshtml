@@ -1,0 +1,71 @@
+﻿@model LivestreamTest.Models.SpotifyMeModel
+
+<table class="table table-responsive table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Property Name</th>
+            <th scope="col">Property Value</th>
+            <th scope="col">Sub Property Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>display_name</td>
+            <td>@Model.display_name.</td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td>@Model.email</td>
+        </tr>
+        <tr>
+            <td>external_urls</td>
+            <td>spotify</td>
+            <td>@Model.external_urls.spotify</td>
+        </tr>
+        <tr>
+            <td>href</td>
+            <td>@Model.href</td>
+        </tr>
+        <tr>
+            <td>id</td>
+            <td>@Model.id</td>
+        </tr>
+
+        <tr>
+            <td>images</td>
+            <td></td>
+        </tr>
+
+        @foreach (var image in Model.images)
+        {
+            <tr>
+                <td></td>
+                <td>height</td>
+                <td>@image.height</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>url</td>
+                <td>@image.url</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>width</td>
+                <td>@image.width</td>
+            </tr>
+        }
+
+        <tr>
+            <td>product</td>
+            <td>@Model.product.</td>
+        </tr>
+        <tr>
+            <td>type</td>
+            <td>@Model.type.</td>
+        </tr>
+        <tr>
+            <td>uri</td>
+            <td>@Model.uri.</td>
+        </tr>
+    </tbody>
+</table>

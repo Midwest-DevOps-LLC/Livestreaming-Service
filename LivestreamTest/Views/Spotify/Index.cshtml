@@ -1,0 +1,153 @@
+﻿@model LivestreamTest.Models.SpotifyIndexModel
+@{
+    ViewData["Title"] = "Spotify";
+}
+
+<div class="container-fluid">
+    @*<div class="row">&nbsp;</div>*@
+
+    @if (string.IsNullOrEmpty(Model.ClientGUID) == false)
+    {
+        <div class="alert alert-success">Successfully logged into Spotify!</div>
+    }
+    else if (Model.LoginSuccess == SpotifyIndexModel.LoginSuccessEnum.Declined)
+    {
+        <div class="alert alert-danger">You declined the authorization :(</div>
+    }
+    else if (Model.LoginSuccess == SpotifyIndexModel.LoginSuccessEnum.UnknownError)
+    {
+        <div class="alert alert-danger">An unknown erroed occured during the authorization process</div>
+    }
+
+    <div class="row">
+        @if (string.IsNullOrEmpty(Model.ClientGUID))
+        {
+            <a class="btn btn-primary float-right" href="/Spotify/Login" role="button">Link to Spotify</a>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-4" id="me"></div>
+        <div class="col-4"></div>
+        <div class="col-4" id="currentlyPlaying"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-4" id="recentlyplayed" style="max-height:5em;">
+
+        </div>
+    </div>
+
+    @if (string.IsNullOrEmpty(Model.ClientGUID) == false)
+    {
+        <div class="row">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <select id="drpType" class="custom-select" id="inputGroupSelect01">
+                        <option value="track" selected>Track</option>
+                        <option value="artist">Artist</option>
+                    </select>
+                </div>
+                <input id="txtSearch" type="text" class="form-control" placeholder="Search...">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="Search()">Search</button>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="searchResults">
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+
+        var isLoggedIn = false;
+
+        @if (string.IsNullOrEmpty(Model.ClientGUID) == false)
+        {
+            @:isLoggedIn = true;
+        }
+
+        var clientGUID = '';
+
+        $(document).ready(function () {
+            if (isLoggedIn) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Spotify/Me',
+                    success: function(data) {
+                        $('#me').html(data);
+                    }
+                })
+                .done(function (msg) {
+                    //alert('Data Saved: ' + msg);
+                });
+
+                $.ajax({
+                    method: 'GET',
+                    url: '/Spotify/RecentlyPlayed',
+                    success: function (data) {
+                        $('#recentlyplayed').html(data);
+                    }
+                })
+                .done(function (msg) {
+                    //alert('Data Saved: ' + msg);
+                });
+
+                $.ajax({
+                    method: 'GET',
+                    url: '/Spotify/CurrentlyPlaying',
+                    success: function (data) {
+                        $('#currentlyPlaying').html(data);
+                    }
+                })
+                .done(function (msg) {
+                    //alert('Data Saved: ' + msg);
+                });
+
+                //$.ajax({
+                //    method: 'POST',
+                //    url: '/Spotify/AddItemToQueue',
+                //    data: { uri: 'spotify:track:4b9jRNwMUvABxTD1amyfA6'},
+                //    success: function (data) {
+                //        //$('#currentlyPlaying').html(data);
+                //    }
+                //})
+                //.done(function (msg) {
+                //    //alert('Data Saved: ' + msg);
+                //});
+            }
+        });
+
+        function Search() {
+            if (isLoggedIn) {
+                $.ajax({
+                    method: 'POST',
+                    url: '/Spotify/Search',
+                    data: { q: $('#txtSearch').val(), type: $('#drpType').val() },
+                    success: function (data) {
+                        $('#searchResults').html(data);
+                    }
+                })
+                .done(function (msg) {
+                    //alert('Data Saved: ' + msg);
+                });
+            }
+        }
+
+        function AddToQueue(uri) {
+                $.ajax({
+                    method: 'POST',
+                    url: '/Spotify/AddItemToQueue',
+                    data: { uri: uri},
+                    success: function (data) {
+                        ShowGreenStatus('Added to Queue');
+                    }
+                })
+                .done(function (msg) {
+                    //alert('Data Saved: ' + msg);
+                });
+        }
+    </script>
+}
